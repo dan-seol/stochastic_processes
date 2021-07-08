@@ -1,0 +1,126 @@
+---
+title: "First R Markdown example"
+output: html_document
+---
+
+
+### R markdown basics 
+
+You can write text in an R markdown document and then have it formatted *nicely* as a PDF or HTML file.   You can even write fancy math, like: 
+
+$$ 
+E = m c^2
+$$
+
+or fancier math like: 
+
+$$ 
+Pr(A \cup B) = Pr(A) + Pr(B) - Pr(A \cap B)
+$$
+
+### R markdown code blocks
+
+But most importantly you can write blocks of R code that can be formatted nicely.  This code block simulates rolling two fair six-sided dice.  
+
+```{r}
+first_dice_roll = sample(1:6, size=1,prob=rep(1/6,6))
+second_dice_roll = sample(1:6, size=1,prob=rep(1/6,6))
+print(first_dice_roll)
+print(second_dice_roll)
+```
+
+If we want to create a nice data frame containing the results of 1000 rolls of a pair of dice, we can use the **tidyverse** package, which you can install by going to the **Tools** menu and then to **Install Packages**. 
+
+```{r,comment=NA}
+library(tidyverse)
+rolls = 1000
+dice_data_frame = tibble(Roll = 1:rolls,
+                             First_roll = sample(1:6,size=rolls,prob=rep(1/6,6),replace=TRUE),
+                             Second_roll = sample(1:6,size=rolls,prob=rep(1/6,6),replace=TRUE))
+
+dice_data_frame
+```
+
+We can also generate new random variables, such as the sum and the difference of the two dice rolls
+
+```{r}
+dice_data_frame = dice_data_frame %>% 
+  mutate(Sum = First_roll + Second_roll, Difference = First_roll - Second_roll)
+
+dice_data_frame
+
+```
+
+Finally, we can summarize the distributions of the random variables, by using a barplot. 
+
+```{r}
+ggplot(dice_data_frame,aes(x=factor(Sum))) + geom_bar() + ggtitle("Counts of sums") + 
+  xlab("Sum") 
+
+ggplot(dice_data_frame,aes(x=factor(Sum))) + geom_bar(aes(y=..count../sum(..count..))) + 
+  ggtitle("Relative frequencies of sums") + 
+  xlab("Sum") 
+
+ggplot(dice_data_frame,aes(x=factor(Difference))) + geom_bar() + ggtitle("Counts of differences") + 
+  xlab("Difference") 
+
+ggplot(dice_data_frame,aes(x=factor(Difference))) + geom_bar(aes(y=..count../sum(..count..))) + 
+  ggtitle("Relative frequencies of differences")+ 
+  xlab("Difference") 
+
+```
+
+
+### More advanced
+
+We can also write functions to compute things that R doesn't necessarily have built in. 
+
+```{r}
+dice_sum_pmf = function(first,second){
+### Returns the pmf of the sum of two fair dice that are possibly differently sided
+
+### first: number of sides of the first die
+### second: number of sides of the second die
+  
+# First compute joint pmf of two dice in matrix using outer product of two vectors
+  
+joint_pmf = outer(rep(1/first,first),rep(1/second,second),'*')
+
+# Then compute all possible sums using outer "product" but using the sum
+
+sums = outer(1:first,1:second,'+')
+
+# Creates tibble that links sums to the joint_pmf
+
+linked_table = tibble(Sum=as.numeric(sums), prob=as.numeric(joint_pmf))
+
+# Sums up probs to find pmf for sum
+
+sum_pmf  = linked_table %>% group_by(Sum) %>% summarise(Prob=sum(prob))
+
+# Find the sum_pmf value corresponding to our inputted values
+
+return(sum_pmf)
+}
+```
+
+Now we can call the function: 
+
+```{r}
+dice_sum_pmf(6,6)
+
+dice_sum_pmf(3,7)
+
+dice_sum_pmf(20,10)
+
+```
+
+Using our function now, we can plot the true values to compare to our simulated values from before: 
+
+```{r}
+ggplot(dice_data_frame,aes(x=factor(Sum))) + geom_bar(aes(y=..count../sum(..count..)),alpha=0.5) + 
+  geom_point(data=dice_sum_pmf(6,6),aes(x=factor(Sum),y=Prob),colour="red")+
+  ggtitle("Relative frequencies of sums")
+
+
+```

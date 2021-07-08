@@ -1,0 +1,107 @@
+---
+title: "Gibbs Sampler"
+author: "Dan Yunheum Seol"
+date: "4/9/2019"
+output: pdf_document
+---
+```{r}
+#Bivariate Example
+biStNormGibbs <- function(N, rho){
+  X <- numeric(N+1)
+  Y <- numeric(N+1)
+  sigma <- sqrt(1-rho^2)
+  X[1] = 0
+  Y[1] = 0
+for(i in 2:(N+1)){ 
+
+
+X[i] <- rnorm(1, mean = rho*Y[i-1], sd= sigma)
+Y[i] <- rnorm(1, mean = rho*X[i], sd= sigma)
+}
+  
+  mtx <- cbind(X, Y)
+  colnames(mtx) <- c("X", "Y")
+  return(mtx)
+   
+  
+
+}
+plot(biStNormGibbs(10000, -0.6),pch=20,xlab="x",ylab="y",main="")
+```
+
+```{r}
+#trivariate example
+
+Cas_Geor_trivariate <- function(trials){
+  
+  X <- numeric(trials+1)
+  P <- numeric(trials+1)
+  N <- numeric(trials+1)
+  
+  X[1] <- 100
+  P[1] <- .5
+  N[1] <- 100
+  for (i in 2:(trials+1)) {
+    X[i] <- rbinom(1, N[i-1], P[i-1])
+    P[i] <- rbeta(1, X[i]+1, N[i-1]-X[i]+1)
+    N[i] <- rpois(1, 4*(1-P[i]))+X[i]
+  }
+  
+  mat <- cbind(X, P, N)
+  colnames(mat) <- c("X", "P", "N")
+  return(mat)
+  
+}
+simu <- Cas_Geor_trivariate(10000)
+plot(simu[2:5001, 1], simu[2:5001, 2], pch=20,xlab="X",ylab="P",main="", xlim=c(0,40))
+plot(simu[2:5001, 1], simu[2:5001, 3], pch=20,xlab="x",ylab="N",main="",xlim=c(0,40), ylim = c(0, 40))
+plot(simu[2:5001, 2], simu[2:5001, 3], pch=20,xlab="P",ylab="N",main="", xlim=c(0,40))
+```
+
+```{r}
+trials <- 50000
+sim <- matrix(rep(0,3*trials),ncol=3)
+sim[1,] <- c(1,0.5,2)
+for (i in 2:trials)
+{
+sim[i,1] <- rbinom(1,sim[i-1,3],sim[i-1,2])
+sim[i,2] <- rbeta(1,sim[i,1]+1,sim[i-1,3]-sim[i,1]+1)
+sim[i,3] <- rpois(1,4*(1-sim[i,2]))+sim[i,1]
+}
+
+plot(sim[2:50000, 1], sim[2:5000, 2], pch=20,xlab="X",ylab="P",main="", xlim=c(0,40))
+plot(sim[2:5000, 1], sim[2:5000, 3], pch=20,xlab="x",ylab="N",main="",xlim=c(0,40), ylim = c(0, 40))
+plot(sim[2:5000, 2], sim[2:5000, 3], pch=20,xlab="P",ylab="N",main="", xlim=c(0,40))
+```
+```{r}
+#Ising model
+betalist <- c(0,0.441,0.75,-1.5)
+
+Ising_mdl <- function(g, beta, N){
+  grid <- matrix(sample(c(-1, 1), (g+2)^2, rep=T), nrow=g+2)
+  #We pad extra two rows in order to be able to get neighbors even for boundary vertices
+  grid[c(1,g+2), ]<- 0
+  grid[,c(1,g+2)] <-0
+  
+  for(k in 1:N)
+  {
+    #positions are randomly chosen
+    i <- sample(2:(g+1), 1)
+    j <- sample(2:(g+1), 1)
+    # We collect the neighbors
+    nbhd <- grid[i,j+1]+grid[i,j-1]+grid[i-1,j]+grid[i+1,j]
+    p <- 1/(1+ exp(-beta*2*nbhd))
+    
+    #Now we sample from uniform determine how to determine our state
+    if (runif(1) < p) grid[i,j] <- 1 else grid[i,j] <- -1
+  }
+  final <- grid[2:(g+1),2:(g+1)]
+  image(final, yaxt="n", xaxt="n", col=c(0,1))
+}
+
+for(i in 1:4){
+  Ising_mdl(100, betalist[i], 100000)
+}
+
+```
+

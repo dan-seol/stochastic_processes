@@ -1,0 +1,74 @@
+---
+title: "Branching Process - notebook"
+output: html_notebook
+---
+
+```{r}
+branch <- function(n, lam) { # Poisson
+  z <- c(1, rep(0, n))
+  for(i in 2:(n+1)){
+    z[i] <- sum(rpois(z[i-1], lam))
+  }
+  return(z)
+  
+}
+```
+
+```{r}
+branch(10, 1/4)
+replicate(5, branch(10, 1/4))
+n <- 5000
+simlist <- replicate(n, branch(10, 1/4)[11])
+sum(simlist==0)/n
+hist(simlist)
+```
+```{r}
+branch(10, 3/4)
+replicate(5, branch(10, 1))
+n <- 5000
+simlist1 <- replicate(n, branch(10, 2)[11])
+sum(simlist1==0)/n
+hist(simlist1)
+```
+```{r}
+# Geometric distribution
+branch.Geo <- function(n, p) { # Poisson
+  z <- c(1, rep(0, n))
+  for(i in 2:(n+1)){
+    z[i] <- sum(rgeom(z[i-1], p))
+  }
+  return(z)
+  
+}
+```
+```{r}
+branch.Geo(10, 3/4)
+replicate(5, branch.Geo(10, .5))
+n <- 5000
+simlist.Geo <- replicate(n, branch.Geo(10, .5)[11])
+sum(simlist.Geo==0)/n
+median(simlist.Geo)
+hist(simlist.Geo)
+curve((1-sqrt(1-4*x*(1-x)))/(2*(1-x)), 0, 1/2)
+```
+```{r}
+# Class examples a =(1/6, 1/3, 1/2)
+branch.class <- function(n) { # Poisson
+  z <- c(1, rep(0, n))
+  for(i in 2:(n+1)){
+    z[i] <- sum(sample(0:2, z[i-1], replace=T, prob=c(1/6,1/3,1/2)))
+  }
+  return(z)
+  
+}
+```
+```{r}
+branch.class(10)
+replicate(5, branch.class(10))
+n <- 5000
+simlist.class <- replicate(n, branch.class(10)[11])
+sum(simlist.class==0)/n
+median(simlist.class)
+hist(simlist.class)
+```
+

@@ -1,0 +1,24 @@
+{
+    "id": "7BC97433",
+    "path": "/cloud/project/R examples - 447/StandardNormal_MCMC.R",
+    "project_path": "R examples - 447/StandardNormal_MCMC.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1624629116542.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1554045049,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1554045049,
+    "read_only": false,
+    "read_only_alternatives": []
+}

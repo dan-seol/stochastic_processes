@@ -1,0 +1,535 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={MATH 447: Introduction to Stochastic Processes (Assignment 4)},
+            pdfauthor={Dan Yunheum Seol},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{MATH 447: Introduction to Stochastic Processes (Assignment 4)}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Dan Yunheum Seol}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{April 12, 2019}
+
+\usepackage{blkarray}
+
+\begin{document}
+\maketitle
+
+\hypertarget{section}{%
+\section{6.12}\label{section}}
+
+\hypertarget{starting-at-noon-diners-arrive-at-a-restaurant-according-to-a-poisson-process-at-the-rate-of-five-customers-per-minute.-the-time-each-customer-spends-eating-at-the-restaurant-has-an-exponential-distribution-with-mean-40-minutes-independent-of-other-customers-and-independent-of-arrival-times.-find-the-distribution-as-well-as-the-mean-and-variance-of-the-number-of-diners-in-the-restaurant-at-2-p.m.}{%
+\subsubsection{Starting at noon, diners arrive at a restaurant according
+to a Poisson process at the rate of five customers per minute. The time
+each customer spends eating at the restaurant has an exponential
+distribution with mean 40 minutes, independent of other customers and
+independent of arrival times. Find the distribution, as well as the mean
+and variance, of the number of diners in the restaurant at 2
+p.m.}\label{starting-at-noon-diners-arrive-at-a-restaurant-according-to-a-poisson-process-at-the-rate-of-five-customers-per-minute.-the-time-each-customer-spends-eating-at-the-restaurant-has-an-exponential-distribution-with-mean-40-minutes-independent-of-other-customers-and-independent-of-arrival-times.-find-the-distribution-as-well-as-the-mean-and-variance-of-the-number-of-diners-in-the-restaurant-at-2-p.m.}}
+
+Let \[
+N_t := \text{The number of customers arriving at diner on time t}
+\] We have \[
+(N_t)_{t \geq 0} \sim PP(5)
+\] and define the time spent \[
+T_k := \text{time customer k spends} \sim Exp(\frac{1}{40})
+\] where \$T\_k \perp !!! \perp T\_j \$ if \(j \neq k\) and
+\(T_k \perp \!\!\! \perp N_k\)
+
+Then define\\
+\[
+C_t := \text{The number of customers at the diner on time t} 
+\]
+
+Firstly, you condition on \(N_t\)
+
+\[
+P(C_t = k) = \sum_{n=k}^\infty P(C_t = k | N_t = n)P(N_t = n)
+\] By the definition of Poisson process, \[
+N_t \sim Pois(5t) \implies (N_t = n) = \frac{e^{-5t}(5t)^n}{n!} 
+\] We obtain \[
+P(C_t = k) = \sum_{n=k}^\infty P(C_t = k | N_t = n)\frac{e^{-5t}(5t)^n}{n!}
+\]
+
+Secondly, we find the probability for \(C_t | N_t\).
+
+Let \(S_i\), be the uniformly distributed arrival times conditioned on
+\(N_t = n\), thus we have
+
+\[
+P(C_t = k | N_t = n) = P(k \text{ of } S_i + T_i > t) = P(k \text{ of } S_i + T_i > t)  = P(k \text{ of } U_{(i)} + T_i > t)  = 
+\]
+
+\[
+P(k \text{ of } U_i + T_i > t)  = {n\choose k} p^k (1-p)^{n-k}  =
+\] where
+
+\[
+p =  P(U_i + T_i > t) = \frac{1}{t}\int_{0}^t P(T_i > t - u) du = \frac{1}{t}\int_{0}^t P( T_i > t-u |  u \leq t) du = \frac{1}{t}\int_{0}^t P(T_i > x) dx =
+\]
+
+\[
+= 
+\frac{1}{t} \int_{0}^t 1 - exp(-\frac{1}{40}x) dx = \frac{1}{t} \{ t +40exp(-\frac{1}{40}x) \bigg |^t _0\}
+\] then we have \[
+P(C_t = k) = \sum_{n=k}^\infty{n\choose k} p^k (1-p)^{n-k}  \frac{e^{-5t}(5t)^n}{n!} = \frac{n!}{k!(n-k)!} p^k (1-p)^{n-k}  \frac{e^{-5t}(5t)^n}{n!} =
+\]
+
+\[
+\sum_{n=k}^\infty \frac{p^k(5t)^k (1-p)^{n-k} (5t)^{n-k}}{k!(n-k)!} e^{-5pt} e^{-5(1-p)t} =
+\]
+
+\[
+e^{-5pt}\frac{(5pt)^k}{k!} e^{-5(1-p)t} \sum_{n=k}^\infty \frac{(5(1-p)t)^{m-k}}{(n-k)!} = 
+\]
+
+but \[
+\sum_{n=k}^\infty \frac{(5(1-p)t)^{m-k}}{(n-k)!} = e^{5(1-p)t}
+\] so it follows that \[
+P(C_t = k) = e^{-5pt}\frac{(5pt)^k}{k!}
+\] So \((C_t)_{t \geq 0}\) is a Poisson process with
+\(\lambda = 5p\)\textbackslash{}
+
+We would have \[
+E[C_t] = Var[C_t] = 5pt
+\] and let's calculate for when t = 120
+
+we will have
+
+\[
+5pt= 5* \frac{120}{120}40(1-e^{-3})=190
+\]
+
+\#6.15
+
+\hypertarget{failures-occur-for-a-mechanical-process-according-to-a-poisson-process.-failures-are-classiied-as-either-major-or-minor.-major-failures-occur-at-the-rate-of-1.5-failures-per-hour.-minor-failures-occur-at-the-rate-of-3.0-failures-per-hour.}{%
+\subsubsection{Failures occur for a mechanical process according to a
+Poisson process. Failures are classiied as either major or minor. Major
+failures occur at the rate of 1.5 failures per hour. Minor failures
+occur at the rate of 3.0 failures per
+hour.}\label{failures-occur-for-a-mechanical-process-according-to-a-poisson-process.-failures-are-classiied-as-either-major-or-minor.-major-failures-occur-at-the-rate-of-1.5-failures-per-hour.-minor-failures-occur-at-the-rate-of-3.0-failures-per-hour.}}
+
+\[
+F_t =  F_t^{(M)} + F_t^{(m)}
+\] where \[
+\begin{array}{c}
+F_t^{(M)} \sim PP(1.5)\ & F_t ^{(m)} \sim PP(3)
+\end{array}
+\] Remark that we have \[
+F_t \sim PP(4.5)
+\]
+
+\hypertarget{a-find-the-probability-that-two-failures-occur-in-1-hour.}{%
+\subsubsection{(a) Find the probability that two failures occur in 1
+hour.}\label{a-find-the-probability-that-two-failures-occur-in-1-hour.}}
+
+\[
+P(F_1 = 2) = e^{-4.5}\frac{(4.5)^2}{2!} = 0.1125
+\]
+
+\hypertarget{b-find-the-probability-that-in-half-an-hour-no-major-failures-occur.}{%
+\subsubsection{(b) Find the probability that in half an hour, no major
+failures
+occur.}\label{b-find-the-probability-that-in-half-an-hour-no-major-failures-occur.}}
+
+\[
+P(F_{0.5}^{(M)}= 0) = e^{-1.5 * 0.5} = e^{(-0.75)} = 0.4724
+\]
+
+\hypertarget{c-find-the-probability-that-in-2-hours-at-least-two-major-failures-occur-or-at-least-two-minor-failures-occur.}{%
+\subsubsection{(c) Find the probability that in 2 hours, at least two
+major failures occur or at least two minor failures
+occur.}\label{c-find-the-probability-that-in-2-hours-at-least-two-major-failures-occur-or-at-least-two-minor-failures-occur.}}
+
+Since major failures and minor failures happen independently, \[
+P(F_2^{(M)} \geq 2 \lor F_2^{(m)} \geq 2) = P(F_2^{(M)} \geq 2) + P(F_2^{(m)} \geq 2) - P(F_2^{(M)} \geq 2 ) P( F_2^{(m)} \geq 2) =
+\]
+
+\[
+(1-P(F_2^{(M)} \leq 1)  + (1-P(F_2^{(m)} \leq 1)  -  (1-P(F_2^{(M)} \leq 1) (1-P(F_2^{(m)} \leq 1) =
+\]
+
+\[
+1 - P(F_2^{(M)} \leq 1)-P(F_2^{(m)} \leq 1) + P(F_2^{(M)} \leq 1 + P(F_2^{(m)} \leq 1) - P(F_2^{(M)} \leq 1)P(F_2^{(m)} \leq 1) =
+\]
+
+\[
+1 - P(F_2^{(M)} \leq 1)P(F_2^{(m)} \leq 1) = 1 - (e^{-3}\sum_{i=0}^1 3^i )(e^{-6} \sum_{j=0}^1 6^i) = 0.9965
+\] \# 6.33
+
+\hypertarget{let-s_1-s_2-...-be-the-arrival-times-of-a-poisson-process-with-parameter-lambda.-given-the-time-of-the-nth-arrival-ind-the-expected-time-es_1s_n-of-the-first-arrival.}{%
+\subsubsection{\texorpdfstring{Let \(S_1, S_2, ...\) be the arrival
+times of a Poisson process with parameter \(\lambda\). Given the time of
+the \(n^{th}\) arrival, ind the expected time \(E(S_1|S_n)\) of the
+first
+arrival.}{Let S\_1, S\_2, ... be the arrival times of a Poisson process with parameter \textbackslash{}lambda. Given the time of the n\^{}\{th\} arrival, ind the expected time E(S\_1\textbar{}S\_n) of the first arrival.}}\label{let-s_1-s_2-...-be-the-arrival-times-of-a-poisson-process-with-parameter-lambda.-given-the-time-of-the-nth-arrival-ind-the-expected-time-es_1s_n-of-the-first-arrival.}}
+
+\[
+E[S_1|S_n] = E[S_1 | N_{S_n} =n] = E[U_{(1)} | N_{S_n} = n]
+\]
+
+where \(U_i \sim Uniform(0, S_n)\)
+
+Remark if \(S_n = t\) \[
+P(U_{(1)} \leq u | N_{S_n} =n) = 1-P(U_{(1)} > u | N_{S_n} =n) = 1- (1-P(U \leq u))^{n-1} = 1 - (1 - \frac{u}{t})^{n-1}
+\]
+
+\[
+\implies  f_{U_{(1)}}(u) =  \frac{(n-1)}{t}(1 - \frac{u}{t})^{n-2}
+\] So \[
+E[U_{(1)} \leq u | S_n = t)] = \int_{0}^t \frac{(n-1)u}{t}(1 - \frac{u}{t})^{n-2} du 
+\] If you parametrize \(\frac{u}{t} = x\) you have
+\(\frac{1}{t} du = dx\) so we have \(du = t dx\)
+
+It follows that
+
+\[
+E[U_{(1)} \leq u | S_n = t)] = (n-1)t \int_{0}^1 x (1-x)^{n-2} dx = (n-1) t \frac{\Gamma(2)\Gamma(n-1)}{\Gamma(n+1)} = \frac{t}{n} = \frac{S_n}{n}
+\]
+
+\hypertarget{section-1}{%
+\section{7.24}\label{section-1}}
+
+\hypertarget{customers-arrive-at-a-busy-food-truck-according-to-a-poisson-process-with-parameter-lambda.-if-there-are-i-people-already-in-line-the-customer-will-join-the-line-with-probability-1i-1.-assume-that-the-chef-at-the-truck-takes-on-average-alpha-minutes-to-process-an-order.}{%
+\subsubsection{\texorpdfstring{Customers arrive at a busy food truck
+according to a Poisson process with parameter \(\lambda\). If there are
+\(i\) people already in line, the customer will join the line with
+probability \(1/(i + 1)\). Assume that the chef at the truck takes, on
+average, \(\alpha\) minutes to process an
+order.}{Customers arrive at a busy food truck according to a Poisson process with parameter \textbackslash{}lambda. If there are i people already in line, the customer will join the line with probability 1/(i + 1). Assume that the chef at the truck takes, on average, \textbackslash{}alpha minutes to process an order.}}\label{customers-arrive-at-a-busy-food-truck-according-to-a-poisson-process-with-parameter-lambda.-if-there-are-i-people-already-in-line-the-customer-will-join-the-line-with-probability-1i-1.-assume-that-the-chef-at-the-truck-takes-on-average-alpha-minutes-to-process-an-order.}}
+
+Define the number of people as \((X_t)_{t \geq 0}\)
+
+Remark the time that it takes to process an order will be exponentially
+distributed with parameter \(1/ \alpha\)
+
+The number of people in line is a birth-death process with
+\(\lambda_i = \frac{\lambda}{i+1}\) and
+\(\mu_i = \mu = \frac{1}{\alpha}\)
+
+We will find the stationary distribution first, remarking
+\$\frac{\lambda_i}{\mu_i} = \frac{(\lambda \alpha)}{i+1} \$ \[
+\begin{array}{c}
+\pi_1 = \lambda\alpha \pi_0 \\
+\pi_2 = \frac{\lambda\alpha}{2} \pi_1 = \frac{(\lambda\alpha)^2}{2!} \pi_0 \\
+... \\
+\pi_k = \frac{(\lambda\alpha)^k}{k!} \pi_0
+\end{array}
+\]
+
+\[
+\pi_0 = \bigg( \sum_{k=0}^\infty \frac{(\lambda\alpha)^k}{k!} \bigg)^{-1} = e^{-\lambda \alpha}
+\] So long-term number of people in line is a poisson variable. \#\#\#
+(a) Find the long-term average number of people in line.
+
+Since the long term number of people is a Poisson random variable, the
+expected number would be\\
+\[\lambda \alpha\]
+
+\hypertarget{b-find-the-long-term-probability-that-there-are-at-least-two-people-in-line.}{%
+\subsubsection{(b) Find the long-term probability that there are at
+least two people in
+line.}\label{b-find-the-long-term-probability-that-there-are-at-least-two-people-in-line.}}
+
+\[
+\lim_{t \rightarrow \infty } P(X_t \geq 2) = 1- (\pi_0 + \pi_1) = 1 - e^{-\lambda \alpha}(1+ \lambda \alpha)
+\]
+
+\hypertarget{section-2}{%
+\section{7.27}\label{section-2}}
+
+\hypertarget{recall-the-discrete-time-ehrenfest-doglea-model-of-example-3.7.-in-the-continuous-time-version-there-are-n-fleas-distributed-between-two-dogs.-fleas-jump-from-one-dog-to-another-independently-at-rate-lambda.-let-x_t-denote-the-number-of-fleas-on-the-first-dog.}{%
+\subsubsection{\texorpdfstring{Recall the discrete-time Ehrenfest
+dog--lea model of Example 3.7. In the continuous-time version, there are
+\(N\) fleas distributed between two dogs. Fleas jump from one dog to
+another independently at rate \(\lambda\). Let \(X_t\) denote the number
+of fleas on the first
+dog.}{Recall the discrete-time Ehrenfest dog--lea model of Example 3.7. In the continuous-time version, there are N fleas distributed between two dogs. Fleas jump from one dog to another independently at rate \textbackslash{}lambda. Let X\_t denote the number of fleas on the first dog.}}\label{recall-the-discrete-time-ehrenfest-doglea-model-of-example-3.7.-in-the-continuous-time-version-there-are-n-fleas-distributed-between-two-dogs.-fleas-jump-from-one-dog-to-another-independently-at-rate-lambda.-let-x_t-denote-the-number-of-fleas-on-the-first-dog.}}
+
+\hypertarget{a-show-that-the-process-is-a-birth-and-death-process.-give-the-birth-and-death-rates.}{%
+\subsubsection{(a) Show that the process is a birth-and-death process.
+Give the birth and death
+rates.}\label{a-show-that-the-process-is-a-birth-and-death-process.-give-the-birth-and-death-rates.}}
+
+Let \(Y_{i1} \sim exp(\lambda)\) be the time where ith flea jumps from
+the second dog to the first dog. Let \(Y_{i2} \sim exp(\lambda)\) be the
+time where ith flea jumps from the first dog to the second dog.
+
+Suppose \(X_t = i\), then the number of fleas on the first dog increases
+by one the first time that one of the fleas on the second dog (there are
+\(N-X_t = N-i\) fleas on it) jumps. The time index where the first jump
+from the second dog happens at the minimum of the independent
+exponential random variables, which is also an exponential random
+variable with the parameter being the sum of it.
+
+\[
+min(Y_{11},... Y_{(N-i)1}) \sim exp((N-i) \lambda ) = q_{i, i+1}
+\]
+
+\[
+min(Y_{11},... Y_{(i)1}) \sim exp(i\lambda) = q_{i, i-1}
+\]
+
+\hypertarget{b-find-the-stationary-distribution.}{%
+\subsubsection{(b) Find the stationary
+distribution.}\label{b-find-the-stationary-distribution.}}
+
+The detailed balance question would be \[
+\pi_i (N-i)\lambda = \pi_{i+1} (i+1) \lambda
+\]
+
+\[
+\begin{array}{c}
+\pi_0 N \lambda = \pi_1 \lambda \implies \pi_1 = N \pi_0  \\
+\pi_1 (N-1) \lambda = \pi_2 2\lambda \implies \pi_2 = \frac{N-1}{2} \pi_1 =  \frac{N(N-1)}{2} \pi_0 \\
+...\\
+\pi_k (N-k) \lambda = \pi_{k+1} (k+1)\lambda \implies \pi_{k+1} = {N\choose k} \pi_0  \\
+\implies 1 = \pi_0 \sum_{k=0}^N {N\choose k}  \implies 
+\\ \pi_0 = \frac{1}{\sum_{k=0}^N {N\choose k} } = \frac{1}{2^N}
+\end{array}
+\]
+
+So we can find our stationary distribution \[
+\pi =(\pi_0, \pi_1, ... \pi_N)
+\] where \(k \in \{0, 1, ..., N\}\) \[
+\pi_k = {N \choose k} \frac{1}{2^N}
+\] which is a binomial distribution with parameters \(N, 1/2\)
+
+\hypertarget{c-assume-that-leas-jump-at-the-rate-of-2-per-minute.-if-there-are-10-fleas-on-cooper-and-no-fleas-on-lisa-how-long-on-average-will-it-take-for-lisa-to-get-4-fleas}{%
+\subsubsection{(c) Assume that leas jump at the rate of 2 per minute. If
+there are 10 fleas on Cooper and no fleas on Lisa, how long, on average,
+will it take for Lisa to get 4
+fleas?}\label{c-assume-that-leas-jump-at-the-rate-of-2-per-minute.-if-there-are-10-fleas-on-cooper-and-no-fleas-on-lisa-how-long-on-average-will-it-take-for-lisa-to-get-4-fleas}}
+
+Let \(X_t\) be the number of fleas on Lisa. We set 4 as an absorbing
+state. We would not counting the cases where it reaches 4 since we are
+starting from 0.
+
+So we construct a matrix in canonical form, which looks like this:
+
+\[
+Q_{canonical}=\left[\begin{array}{ccccc} 0 &0&0&0&0\\ 0&-20&20&0&0 \\ 0 & 2 & -20 & 18 &0\\0&0&4&-20&16\\14&0&0&6&-20 \end{array} \right]
+\] with V \[
+\left[\begin{array}{cccc} -20&20&0&0 \\ 2 & -20 & 18 &0\\0&4&-20&16\\0&0&6&-20 \end{array} \right]
+\]
+
+and we calculate \(F =-V^{-1}\) as below
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{labels <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{)}
+
+\NormalTok{row1 <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{)}
+\NormalTok{row2 <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\OperatorTok{-}\DecValTok{20}\NormalTok{,}\DecValTok{20}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{row3 <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{2}\NormalTok{,}\OperatorTok{-}\DecValTok{20}\NormalTok{,}\DecValTok{18}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+\NormalTok{row4 <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{4}\NormalTok{,}\OperatorTok{-}\DecValTok{20}\NormalTok{,}\DecValTok{16}\NormalTok{)}
+\NormalTok{row5 <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{14}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{6}\NormalTok{,}\OperatorTok{-}\DecValTok{20}\NormalTok{)}
+
+\NormalTok{Q <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(row1,row2,row3,row4,row5)}
+
+\KeywordTok{rownames}\NormalTok{(Q) <-}\StringTok{ }\NormalTok{labels}
+\KeywordTok{colnames}\NormalTok{(Q) <-}\StringTok{ }\NormalTok{labels}
+\KeywordTok{print}\NormalTok{(}\StringTok{"Q"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Q"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Q}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    4   0   1   2   3
+## 4  0   0   0   0   0
+## 0  0 -20  20   0   0
+## 1  0   2 -20  18   0
+## 2  0   0   4 -20  16
+## 3 14   0   0   6 -20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{V <-}\StringTok{ }\NormalTok{Q[}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{5}\NormalTok{), }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{5}\NormalTok{)]}
+\KeywordTok{print}\NormalTok{(}\StringTok{"V"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "V"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{V}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     0   1   2   3
+## 0 -20  20   0   0
+## 1   2 -20  18   0
+## 2   0   4 -20  16
+## 3   0   0   6 -20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f <-}\StringTok{ }\OperatorTok{-}\KeywordTok{solve}\NormalTok{(V)}
+\KeywordTok{print}\NormalTok{(}\StringTok{"F"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "F"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              0           1          2          3
+## 0 0.0575396825 0.075396825 0.08928571 0.07142857
+## 1 0.0075396825 0.075396825 0.08928571 0.07142857
+## 2 0.0019841270 0.019841270 0.08928571 0.07142857
+## 3 0.0005952381 0.005952381 0.02678571 0.07142857
+\end{verbatim}
+
+and we have our expected time as the sum of entries of the first row:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sum}\NormalTok{(f[}\DecValTok{1}\NormalTok{,}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.2936508
+\end{verbatim}
+
+\(0.294\) minutes will be our waiting time. (For some reason some of my
+friends kept saying the answer would be 0.45 minutes; why?)
+
+
+\end{document}

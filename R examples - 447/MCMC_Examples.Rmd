@@ -1,0 +1,251 @@
+---
+title: "MCMC textbook example - good binary "
+output: pdf_document
+---
+
+```{r}
+adjacent <- function(init, n)
+  { k <- length(init)
+  tot <-0 #total number of 1 s
+  new <-c(2, init,2) # pad sequence at the ends 
+  for(i in 1:n){
+  index <- 1 +sample(1:k,1)
+  newbit <- 0 + !new[index]
+  if (newbit==0) { 
+    new[index] <- 0
+  tot <- tot+sum(new) 
+  next} else {
+    if(new[index-1]==1 | new[index+1]==1){ #checking the neighbors
+      tot <- tot + sum(new)
+      next} else {new[index] <- 1}
+     tot <- tot + sum(new)}
+  }
+  
+  tot/n- 4 }
+
+```
+```{r}
+m <- 100
+init <- rep(0,m)  # Start at sequence of all 0s
+adjacent(init,100000)
+```
+```{r}
+powerlaw.sim <- function(n){
+  simlist <- numeric(n)
+  #Initialize the first element as 2
+  simlist[1] <- 2
+  for (i in 2:n){
+    
+    if(simlist[i-1]==1){
+    #Deal out cases where an entry is 1  
+    p <- (0.5)^(2.5)
+    #Here we sample from a binary setting since it is more simple
+    b1 <- sample(c(1,2),1,prob=c(1-p,p))
+    simlist[i] <- b1 
+    } else {
+      #Here we sample from cts uniform instead of discrete var to
+      #1. to show there are different ways to "flip a coin" with a p
+        U1 <- runif(1)
+        if(U1<=0.5){
+          simlist[i] <- simlist[i-1]-1}
+        else {
+          pi <- (i/(i+1))^(1.5)
+          U2 <- runif(1)
+          if(U2 <= pi){
+            simlist[i] <- simlist[i-1]+1
+          } else{
+            simlist[i] <- simlist[i-1]
+          }
+        }
+        }
+  }
+  tab <- table(simlist)/n
+  return(tab)
+  }
+
+```
+```{r}
+MHrnorm  <- function(n, epsilon, mu=0, sig=1){ 
+  #you simulate standard normal random variable 
+  #n is your number of trials
+  simlist <- rep(0, n)
+ 
+  state <- 0
+  for(i in 2:n){
+    t <- runif(1, min=state-epsilon, max=state+epsilon)
+    acc <- exp(-((t-mu)^2-(state-mu)^2)/(2*sig))
+    if(runif(1)<acc){
+      state <- t
+    }
+    simlist[i] = state
+  }
+  return(simlist)
+}
+```
+
+```{r}
+example <- MHrnorm(1000000, 1)
+
+hist(example,xlab="",main="",prob=T)
+curve(dnorm(x),-4,4,add=T)
+```
+```{r}
+example[99995:100000]
+```
+```{r}
+example2 <- MHrnorm(1000000, 5)
+
+hist(example2,xlab="",main="",prob=T)
+curve(dnorm(x),-4,4,add=T)
+```
+```{r}
+
+hist(MHrnorm(1000000, 5, -5),xlab="",main="",prob=T)
+curve(dnorm(x, mean=-5),-9,-1,add=T)
+```
+
+
+
+```{r}
+#Now suppose we want to sample from Gamma(2.5, 1)
+#\pi(x) = \frac{1}{\Gamma(2.5)} x^{2.5-1}exp(-x/1)
+#choose the normal distribution as our propose dist q(x,z)
+#We could use what we coded but might be computationally too inefficient
+#Z = |Y| and Y|x_t \sim N(x_t, \sigma)
+#a(x_t, z) = min{1, \frac{\pi(z) q(z, x_t)}{\pi(x_t) q(x_t,z)}} 
+# Normal is a symmetric density thus q(z, x_t) = q(x_t,z)
+# So it reduces into min{1, \frac{\pi(z) }{\pi(x_t) }}
+#= min{1,   z^{2.5-1}exp(-z/1)/x_t^{2.5-1}exp(-x_t/1) }
+#Sample U ~ uniform(0, 1)
+# if u \leq a(x_t, z) set the next state as z
+#otherwise stay at x_t
+MHGamma <- function(N, alpha=2.5, beta=1, sig=1){
+  simlist <- numeric(N)
+  simlist[1] = 0
+  for(i in 2:N){
+    x <- simlist[i-1]
+    z <- abs(rnorm(1, mean=x, sd))
+    acc <- min(1, (z^(alpha-1)*exp(-z/beta))/(x^(alpha-1)*exp(-x/beta)))
+    if (runif(1)< acc){
+      simlist[i] = z
+    }
+    else{
+      simlist[i] = x
+    }
+    
+  }
+  return(simlist)
+}
+
+```
+
+```{r}
+X <- MHGamma(10000)
+par(mar=c(4,4,2,0))
+plot(X,type="s",xlab="t",ylab="X",main='Trace plot')
+par(mar=c(4,4,2,0))
+hist(X,br=seq(0,12,by=0.25),xlab="t",main="",col="black",border="white",ylim=range(0,800))
+xv<-seq(0,12,by=0.01)
+yv<-dgamma(xv,2.5)
+lines(xv,yv*10000*0.25,col="red",lwd=2)
+par(mar=c(4,4,2,0))
+acf(X,lag.max=100,main='');
+title("Autocorrelation for MH sampler",line=1)
+```
+```{r}
+X.1 <- MHGamma(10000, sig=0.1)
+par(mar=c(4,4,2,0))
+plot(X.1,type="s",xlab="t",ylab="X",main='Trace plot')
+par(mar=c(4,4,2,0))
+hist(X.1,br=seq(0,12,by=0.25),xlab="t",main="",col="black",border="white",ylim=range(0,800))
+xv<-seq(0,12,by=0.01)
+yv<-dgamma(xv,2.5)
+lines(xv,yv*10000*0.25,col="red",lwd=2)
+par(mar=c(4,4,2,0))
+acf(X.1,lag.max=100,main='');
+title("Autocorrelation for MH sampler",line=1)
+```
+```{r}
+X.2 <- MHGamma(10000, sig=5)
+par(mar=c(4,4,2,0))
+plot(X.2,type="s",xlab="t",ylab="X",main='Trace plot')
+par(mar=c(4,4,2,0))
+hist(X.2,br=seq(0,12,by=0.25),xlab="t",main="",col="black",border="white",ylim=range(0,800))
+xv<-seq(0,12,by=0.01)
+yv<-dgamma(xv,2.5)
+lines(xv,yv*10000*0.25,col="red",lwd=2)
+par(mar=c(4,4,2,0))
+acf(X.2,lag.max=100,main='');
+title("Autocorrelation for MH sampler",line=1)
+```
+```{r}
+#5.7
+MHbinom <- function(N, n, p){
+  simlist <- numeric(N)
+  for(k in 2:N){
+     i = simlist[k-1]
+     j = sample(0:n,1)
+     
+     acc <- min(1,choose(n, j)/choose(n, i) * p^(j-i)*(1-p)^(i-j))
+     
+     if (runif(1)<acc){
+       simlist[k] = j
+     } else{
+       simlist[k] = i
+     }
+     
+  }
+  
+  return(simlist)
+  
+}
+  
+```
+```{r}
+simbinom <- MHbinom(1000000, 4, 0.25)
+hist(simbinom,breaks=seq(0,4,by=1), xlab="",main="",prob=T)
+xref <- seq(0,4,by = 1)
+yref <- dbinom(xref,4,0.25)
+points(xref,yref,col="green")
+```
+```{r}
+#5.20 - function version
+MHPoisson <- function(N, lambda, p){
+  # We sample from Poisson random variable with mean lambda
+  # We propose geometric distribution with proportion p
+  # We use the success definition of geometric distribution
+  # P(X=k; p) = (1-p)^(k-1)p
+  
+  simlist <- numeric(N)
+  simlist[1] <- 1 # we assume a positive integer state space
+  
+  for(k in 2:N){
+    i = simlist[k-1]
+    j = rgeom(1, p)+1
+    
+    acc <- lambda^(j-i)*(factorial(i)/factorial(j))*(1-p)^(i-j)
+    
+    if(runif(1) < acc){
+      simlist[k] = j
+      
+    } else {
+      simlist[k] = i
+    }
+    
+  }
+  return(simlist)
+}
+```
+```{r}
+simlistPois <- MHPoisson(1000000, 3, 1/3)
+
+xref <- min(simlistPois):max(simlistPois)
+yref <- dpois(xref,3)/(1-exp(-3))
+
+hist(simlistPois, breaks=seq(0,14,by=1) ,xlab="",main="",freq=F)
+points(xref,yref,col="red")
+```
+```{r}
+sum(MHPoisson(1000000, 3, 1/3))/1000000
+```
+

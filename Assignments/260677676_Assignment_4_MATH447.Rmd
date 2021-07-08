@@ -1,0 +1,322 @@
+---
+title: 'MATH 447: Introduction to Stochastic Processes (Assignment 4)'
+author: 'Dan Yunheum Seol '
+date: "April 12, 2019"
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    df_print: paged
+header-includes: \usepackage{blkarray}
+---
+
+# 6.12
+
+### Starting at noon, diners arrive at a restaurant according to a Poisson process at the rate of five customers per minute. The time each customer spends eating at the restaurant has an exponential distribution with mean 40 minutes, independent of other customers and independent of arrival times. Find the distribution, as well as the mean and variance, of the number of diners in the restaurant at 2 p.m.
+
+Let 
+$$
+N_t := \text{The number of customers arriving at diner on time t}
+$$
+We have
+$$
+(N_t)_{t \geq 0} \sim PP(5)
+$$
+and define the time spent
+$$
+T_k := \text{time customer k spends} \sim Exp(\frac{1}{40})
+$$
+where 
+$T_k \perp \!\!\! \perp T_j $
+if $j \neq k$ and $T_k \perp \!\!\! \perp  N_k$
+
+Then define \
+$$
+C_t := \text{The number of customers at the diner on time t} 
+$$
+
+Firstly, you condition on $N_t$
+
+$$
+P(C_t = k) = \sum_{n=k}^\infty P(C_t = k | N_t = n)P(N_t = n)
+$$
+By the definition of Poisson process, 
+$$
+N_t \sim Pois(5t) \implies (N_t = n) = \frac{e^{-5t}(5t)^n}{n!} 
+$$
+We obtain
+$$
+P(C_t = k) = \sum_{n=k}^\infty P(C_t = k | N_t = n)\frac{e^{-5t}(5t)^n}{n!}
+$$
+
+Secondly, we find the probability for $C_t | N_t$.
+
+Let $S_i$, be the uniformly distributed arrival times conditioned on $N_t = n$, thus we have
+
+$$
+P(C_t = k | N_t = n) = P(k \text{ of } S_i + T_i > t) = P(k \text{ of } S_i + T_i > t)  = P(k \text{ of } U_{(i)} + T_i > t)  = 
+$$
+
+
+$$
+P(k \text{ of } U_i + T_i > t)  = {n\choose k} p^k (1-p)^{n-k}  =
+$$
+where 
+
+$$
+p =  P(U_i + T_i > t) = \frac{1}{t}\int_{0}^t P(T_i > t - u) du = \frac{1}{t}\int_{0}^t P( T_i > t-u |  u \leq t) du = \frac{1}{t}\int_{0}^t P(T_i > x) dx =
+$$
+
+$$
+= 
+\frac{1}{t} \int_{0}^t 1 - exp(-\frac{1}{40}x) dx = \frac{1}{t} \{ t +40exp(-\frac{1}{40}x) \bigg |^t _0\}
+$$
+then we have
+$$
+P(C_t = k) = \sum_{n=k}^\infty{n\choose k} p^k (1-p)^{n-k}  \frac{e^{-5t}(5t)^n}{n!} = \frac{n!}{k!(n-k)!} p^k (1-p)^{n-k}  \frac{e^{-5t}(5t)^n}{n!} =
+$$
+
+$$
+\sum_{n=k}^\infty \frac{p^k(5t)^k (1-p)^{n-k} (5t)^{n-k}}{k!(n-k)!} e^{-5pt} e^{-5(1-p)t} =
+$$
+
+$$
+e^{-5pt}\frac{(5pt)^k}{k!} e^{-5(1-p)t} \sum_{n=k}^\infty \frac{(5(1-p)t)^{m-k}}{(n-k)!} = 
+$$
+
+but
+$$
+\sum_{n=k}^\infty \frac{(5(1-p)t)^{m-k}}{(n-k)!} = e^{5(1-p)t}
+$$
+so it follows that
+$$
+P(C_t = k) = e^{-5pt}\frac{(5pt)^k}{k!}
+$$
+So $(C_t)_{t \geq 0}$ is a Poisson process with $\lambda =  5p$\\
+
+We would have
+$$
+E[C_t] = Var[C_t] = 5pt
+$$
+and
+let's calculate for when t = 120
+
+we will have
+
+$$
+5pt= 5* \frac{120}{120}40(1-e^{-3})=190
+$$
+
+
+
+#6.15
+
+### Failures occur for a mechanical process according to a Poisson process. Failures are classiied as either major or minor. Major failures occur at the rate of 1.5 failures per hour. Minor failures occur at the rate of 3.0 failures per hour.
+$$
+F_t =  F_t^{(M)} + F_t^{(m)}
+$$
+where
+$$
+\begin{array}{c}
+F_t^{(M)} \sim PP(1.5)\ & F_t ^{(m)} \sim PP(3)
+\end{array}
+$$
+Remark that we have
+$$
+F_t \sim PP(4.5)
+$$
+
+### (a) Find the probability that two failures occur in 1 hour.
+
+$$
+P(F_1 = 2) = e^{-4.5}\frac{(4.5)^2}{2!} = 0.1125
+$$
+
+
+### (b) Find the probability that in half an hour, no major failures occur.
+
+$$
+P(F_{0.5}^{(M)}= 0) = e^{-1.5 * 0.5} = e^{(-0.75)} = 0.4724
+$$
+
+### (c) Find the probability that in 2 hours, at least two major failures occur or at least two minor failures occur.
+Since major failures and minor failures happen independently,
+$$
+P(F_2^{(M)} \geq 2 \lor F_2^{(m)} \geq 2) = P(F_2^{(M)} \geq 2) + P(F_2^{(m)} \geq 2) - P(F_2^{(M)} \geq 2 ) P( F_2^{(m)} \geq 2) =
+$$
+
+$$
+(1-P(F_2^{(M)} \leq 1)  + (1-P(F_2^{(m)} \leq 1)  -  (1-P(F_2^{(M)} \leq 1) (1-P(F_2^{(m)} \leq 1) =
+$$
+
+$$
+1 - P(F_2^{(M)} \leq 1)-P(F_2^{(m)} \leq 1) + P(F_2^{(M)} \leq 1 + P(F_2^{(m)} \leq 1) - P(F_2^{(M)} \leq 1)P(F_2^{(m)} \leq 1) =
+$$
+
+$$
+1 - P(F_2^{(M)} \leq 1)P(F_2^{(m)} \leq 1) = 1 - (e^{-3}\sum_{i=0}^1 3^i )(e^{-6} \sum_{j=0}^1 6^i) = 0.9965
+$$
+# 6.33
+
+### Let $S_1, S_2, ...$ be the arrival times of a Poisson process with parameter $\lambda$. Given the time of the $n^{th}$ arrival, ind the expected time $E(S_1|S_n)$ of the first arrival.
+
+$$
+E[S_1|S_n] = E[S_1 | N_{S_n} =n] = E[U_{(1)} | N_{S_n} = n]
+$$
+
+where $U_i \sim Uniform(0, S_n)$ 
+
+Remark if $S_n = t$
+$$
+P(U_{(1)} \leq u | N_{S_n} =n) = 1-P(U_{(1)} > u | N_{S_n} =n) = 1- (1-P(U \leq u))^{n-1} = 1 - (1 - \frac{u}{t})^{n-1}
+$$
+
+$$
+\implies  f_{U_{(1)}}(u) =  \frac{(n-1)}{t}(1 - \frac{u}{t})^{n-2}
+$$
+So
+$$
+E[U_{(1)} \leq u | S_n = t)] = \int_{0}^t \frac{(n-1)u}{t}(1 - \frac{u}{t})^{n-2} du 
+$$
+If you parametrize $\frac{u}{t} = x$ you have $\frac{1}{t} du = dx$ so we have $du = t dx$
+
+It follows that
+
+$$
+E[U_{(1)} \leq u | S_n = t)] = (n-1)t \int_{0}^1 x (1-x)^{n-2} dx = (n-1) t \frac{\Gamma(2)\Gamma(n-1)}{\Gamma(n+1)} = \frac{t}{n} = \frac{S_n}{n}
+$$
+
+# 7.24
+
+### Customers arrive at a busy food truck according to a Poisson process with parameter $\lambda$. If there are $i$ people already in line, the customer will join the line with probability $1/(i + 1)$. Assume that the chef at the truck takes, on average, $\alpha$ minutes to process an order.
+
+Define the number of people as $(X_t)_{t \geq 0}$
+
+Remark the time that it takes to process an order will be exponentially distributed with parameter $1/ \alpha$
+
+The number of people in line is a birth-death process with $\lambda_i = \frac{\lambda}{i+1}$ and $\mu_i = \mu = \frac{1}{\alpha}$
+
+We will find the stationary distribution first, remarking $\frac{\lambda_i}{\mu_i} = \frac{(\lambda \alpha)}{i+1} $
+$$
+\begin{array}{c}
+\pi_1 = \lambda\alpha \pi_0 \\
+\pi_2 = \frac{\lambda\alpha}{2} \pi_1 = \frac{(\lambda\alpha)^2}{2!} \pi_0 \\
+... \\
+\pi_k = \frac{(\lambda\alpha)^k}{k!} \pi_0
+\end{array}
+$$
+
+$$
+\pi_0 = \bigg( \sum_{k=0}^\infty \frac{(\lambda\alpha)^k}{k!} \bigg)^{-1} = e^{-\lambda \alpha}
+$$
+So long-term number of people in line is a poisson variable.
+### (a) Find the long-term average number of people in line.
+
+Since the long term number of people is a Poisson random variable, the expected number would be  
+$$\lambda \alpha$$
+
+
+### (b) Find the long-term probability that there are at least two people in line.
+
+
+$$
+\lim_{t \rightarrow \infty } P(X_t \geq 2) = 1- (\pi_0 + \pi_1) = 1 - e^{-\lambda \alpha}(1+ \lambda \alpha)
+$$
+
+
+
+# 7.27
+
+### Recall the discrete-time Ehrenfest dog–lea model of Example 3.7. In the continuous-time version, there are $N$ fleas distributed between two dogs. Fleas jump from one dog to another independently at rate $\lambda$. Let $X_t$ denote the number of fleas on the first dog.
+
+### (a) Show that the process is a birth-and-death process. Give the birth and death rates.
+
+Let $Y_{i1} \sim exp(\lambda)$ be the time where ith flea jumps from the second dog to the first dog.
+Let $Y_{i2} \sim exp(\lambda)$ be the time where ith flea jumps from the first dog to the second dog.
+
+
+Suppose $X_t = i$, then the number of fleas on the first dog increases by one the first time that one of the fleas on the second dog (there are $N-X_t = N-i$ fleas on it) jumps. The time index where the first jump from the second dog happens at the minimum of the independent exponential random variables, which is also an exponential random variable with the parameter being the sum of it.
+
+$$
+min(Y_{11},... Y_{(N-i)1}) \sim exp((N-i) \lambda ) = q_{i, i+1}
+$$
+
+$$
+min(Y_{11},... Y_{(i)1}) \sim exp(i\lambda) = q_{i, i-1}
+$$
+
+
+### (b) Find the stationary distribution.
+
+The detailed balance question would be
+$$
+\pi_i (N-i)\lambda = \pi_{i+1} (i+1) \lambda
+$$
+
+$$
+\begin{array}{c}
+\pi_0 N \lambda = \pi_1 \lambda \implies \pi_1 = N \pi_0  \\
+\pi_1 (N-1) \lambda = \pi_2 2\lambda \implies \pi_2 = \frac{N-1}{2} \pi_1 =  \frac{N(N-1)}{2} \pi_0 \\
+...\\
+\pi_k (N-k) \lambda = \pi_{k+1} (k+1)\lambda \implies \pi_{k+1} = {N\choose k} \pi_0  \\
+\implies 1 = \pi_0 \sum_{k=0}^N {N\choose k}  \implies 
+\\ \pi_0 = \frac{1}{\sum_{k=0}^N {N\choose k} } = \frac{1}{2^N}
+\end{array}
+$$
+
+So we can find our stationary distribution 
+$$
+\pi =(\pi_0, \pi_1, ... \pi_N)
+$$
+where $k \in \{0, 1, ..., N\}$
+$$
+\pi_k = {N \choose k} \frac{1}{2^N}
+$$
+which is a binomial distribution with parameters $N, 1/2$
+
+
+### (c) Assume that leas jump at the rate of 2 per minute. If there are 10 fleas on Cooper and no fleas on Lisa, how long, on average, will it take for Lisa to get 4 fleas?
+
+
+Let  $X_t$ be the number of fleas on Lisa. We set 4 as an absorbing state. We would not counting the cases where it reaches 4 since we are starting from 0.
+
+So we construct a matrix in canonical form, which looks like this:
+
+$$
+Q_{canonical}=\left[\begin{array}{ccccc} 0 &0&0&0&0\\ 0&-20&20&0&0 \\ 0 & 2 & -20 & 18 &0\\0&0&4&-20&16\\14&0&0&6&-20 \end{array} \right]
+$$
+with V
+$$
+\left[\begin{array}{cccc} -20&20&0&0 \\ 2 & -20 & 18 &0\\0&4&-20&16\\0&0&6&-20 \end{array} \right]
+$$
+
+and we calculate $F =-V^{-1}$ as below
+```{r}
+labels <- c(4,0,1,2,3)
+
+row1 <- rep(0, 5)
+row2 <- c(0,-20,20,0,0)
+row3 <- c(0,2,-20,18,0)
+row4 <- c(0,0,4,-20,16)
+row5 <- c(14,0,0,6,-20)
+
+Q <- rbind(row1,row2,row3,row4,row5)
+
+rownames(Q) <- labels
+colnames(Q) <- labels
+print("Q")
+Q
+V <- Q[c(2,3,4,5), c(2,3,4,5)]
+print("V")
+V
+f <- -solve(V)
+print("F")
+f
+```
+and we have our expected time as the sum of entries of the first row:
+
+```{r}
+sum(f[1,c(1:4)])
+```
+
+$0.294$ minutes will be our waiting time. (For some reason some of my friends kept saying the answer would be 0.45 minutes; why?)

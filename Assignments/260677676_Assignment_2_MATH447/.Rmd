@@ -1,0 +1,335 @@
+---
+title: "260677676_Assignment_2_MATH447"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+#3.5
+
+```{r}
+##### Matrix powers ###############################
+# matrixpower(mat,k) mat^k
+#
+matrixpower = function(X, n){
+  
+  if(dim(X)[1] != dim(X)[2]){
+     throw("Dimensions of the matrix do not match: ", dim(X))
+  }
+  if (n==0){return(diag(dim(X)[1]))}
+  else if(n >0) {return(X %*% matrixpower(X, (n-1)))}
+  else {return(matrixpower(solve(X), -n))}
+}
+```
+```{r}
+c11 <- c(0,.75,0,0,.25)
+c12 <- c(.25,0,0,0,.75)
+c13 <- c(0,0,1,0,0)
+c14 <- c(0,0,0,1,0)
+c15 <- c(.75,.25,0,0,0)
+C1 <- cbind(c11, c12, c13, c14, c15)
+```
+```{r}
+#printing p
+C1
+```
+
+
+##(a)
+We need to solve equations
+
+$$
+1 = \frac{3}{4}\pi_2 + \frac{1}{4}\pi_5
+$$
+
+
+$$
+\pi_2 = \frac{1}{4} + \frac{3}{4} \pi_5
+$$
+
+
+$$
+\pi_3 = \pi_3
+$$
+
+
+$$
+\pi_4 = \pi_4
+$$
+
+
+$$
+\pi_5 =\frac{3}{4} +\frac{1}{4}
+$$
+Once we solve the equation we realize that our solution span $\Pi \subset \text{span}\{(1,1,\pi_3,\pi_4, 1)\}$ such that $\forall a$ that satisfies $(3+\pi_3+\pi_4)a = 1$
+
+
+##(b)
+```{r}
+library(rlist)
+accumulateMtxPower = function(X, n){
+  power.list = list(matrixpower(X, n))
+  if(n == 1){
+    return(power.list)
+  } else {
+    return(c(accumulateMtxPower(X, n-1), power.list))
+  }
+}
+```
+
+```{r}
+accumulateMtxPower(C1, 20)
+
+```
+$$
+\lim_{n \rightarrow \infty} P^n =
+\left[ 
+\begin{array}{ccccc}
+ 1/3 & 1/3 &0&0 & 1/3 \\ 
+ 1/3 & 1/3  & 0 &0  & 1/3\\
+ 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 1 & 0 \\
+ 1/3 & 1/3 &0&0& 1/3
+\end{array}  
+\right]
+$$
+
+
+##(c)
+
+First thing to remark that is the transition matrix P is not regular, thus P is not guaranteed to have a limiting distribution in the first place. Secondly, if you remark the rows of the matrix 
+$$
+\lim_{n \rightarrow \infty} P^n
+$$
+
+they are not the same.
+
+#3.27
+
+
+
+
+##(a)
+All vertices communicate via vertex 0, so the chain $X = \{X_t\}_{t \in \mathbb{N}_0}$ is irreducible. Since it is irreducible, all vertices must have the same period. We pick vertex zero to calculate periodicity. The possible return time for vertex 0 is $T =\{n \in \mathbb{N}\ :\ n \geq 2\}$ We have $gcd(T) = 1$. Since all vertices would have period 1 the chain is aperiodic.
+
+
+
+##(b)
+Since all vertices besides zero have two choices (either to go forward or to go back to zero), the probability of our chain reaching to vertex n at once is 
+$$
+1* \frac{1}{2} * \frac{2}{3}* ... *\frac{n-2}{n-1} * \frac{n-1}{n} = \frac{(n-1)!}{n!} = \frac{1}{n}
+$$
+Thus our probability of first passage time being finite is
+$$
+P(T_0 < \infty | X_0 = 0 ) = 1- \lim_{n \rightarrow \infty} \frac{1}{n} =  1
+$$
+Thus vertex 0 is recurrent. Since our chain is irreducible, this implies the entire chain is recurrent.
+
+
+(Alternative solution lies at part (c))
+
+
+##(c)
+
+The chain is null recurrent since for all possible integer k and state j
+$$
+P(T_j = k | X_0 = j ) =\frac{1}{k(k-1)}
+$$
+and the expected value is an infinite subseries of the harmonic series.
+
+We prove this by induction.
+
+###Base case 1: for state 0
+
+$$
+P(T_0 = 2 | X_0 = 0 ) =1 *\frac{1}{2} =\frac{1}{2*(2-1)}
+$$
+And for all others
+$$
+P(T_0 = k | X_0 = 0 ) =1 *\frac{1}{2}* ... * \frac{k-2}{k-1} * \frac{1}{k} =\frac{(k-2)!}{k!} = \frac{1}{k(k-1)}
+$$
+so we have
+
+$$
+E[T_0| X_0 = 0 ] = \sum_{j=2}^\infty k * \frac{1}{k(k-1)} = \sum_{j=2}^\infty \frac{1}{k-1}
+$$
+which is harmonic series. Thus state 0, or vertex 0 is null recurrent.
+
+You can also solve part (b) in this way.
+$$
+P(T_0 < \infty | X_0 = 0 ) =  \lim_{n \rightarrow \infty} \sum_{i=1}^n P(T_0 = i| X_0 = 0) = \sum_{i=2}^\infty \frac{1}{i(i-1)} = \sum_{i=2}^\infty (\frac{1}{i-1}-\frac{1}{i}) = 1 
++ \sum_{i=3}^\infty \frac{1}{i-1} - \sum_{j=2}^\infty \frac{1}{j} = 1
+$$
+###Base case 1: for state 1
+
+The argument is analogous to base case 1. In fact, the expected return time given the initial state as 1 is the same as the state 0: the harmonic series.
+
+### Inductive step: from state j to state j+1
+The first passage time for state j is bounded below by j+1 since you need to visit vertex zero and come back to state j. Suppose our claim holds for $1,\ ...,\ j$
+For j+1, the first passage time for state j is j+2. Thus
+$$
+P(T_{j+1} = j+2 | X_0 = j+1 ) = \frac{1}{j+2} * 1 *\frac{1}{2}* ... * \frac{j}{j+1} = \frac{1}{(j+2)(j+1)}
+$$
+Likewise, in general,
+$$
+P(T_{j+1} = j+2+k | X_0 = j+1 ) = \frac{j+1}{j+2} * ...\frac{1}{j+2+(k+1))} * 1 *\frac{1}{2}* ... * \frac{j}{j+1} = \frac{1}{(j+2+k+1)(j+2+k)}
+$$
+It follows that the expected return time would be
+
+$$
+\sum_{i = j+2}^\infty i \frac{1}{i (i-1)} = \sum_{i = j+2}^\infty \frac{1}{(i-1)} 
+$$
+Which is a part of harmonic series, diverging. Thus we have shown that all states are null recurrent.
+
+
+#3.28
+
+As you can see from the diagrams I attached along with .pdf file,(Appendix 1)  you can notice that $\{1,2,3\}$ is a recurrent communication class whereas $\{4,5,6,7\}$ is a transient communication class,
+You can find the stationary distribution for the recurrent class
+$$
+ P_{recurrent} = 
+\left[ 
+\begin{array}{ccc}
+ 1/3 & 1/3  & 1/3 \\ 
+ 2/3 & 0  & 1/3\\
+ 0 & 2/3 & 1/3
+\end{array}  
+\right]
+$$
+You can the stationary distribution $\pi_{recurrent} = (1/3, 1/3, 1/3)$. For our original TPM P, $\pi = (1/3, 1/3, 1/3, 0,0,0,0)$ 
+Once we take the limit $\lim_{n \rightarrow \infty} P^n$, our matrix will be
+
+$$
+\lim_{n \rightarrow \infty} P^n = 
+\left[ \begin{array}{c}
+ \pi  \\ 
+ \pi \\
+ ... \\
+ \pi
+\end{array}  \right]
+$$
+Thus the first 3 entries of any row will be $1/3$, and the rest of it will stay as zero.
+Since we determined the numbers, now we can use "technology" to verify our claim:
+```{r}
+r1 <- c(1/3,1/3,1/3,0,0,0,0)
+r2 <- c(2/3,0,1/3,0,0,0,0)
+r3 <-c(0,2/3,1/3,0,0,0,0)
+r4 <- c(0,1/4,0,1/2,0,1/4,0)
+r5 <- c(0,0,1/4,0,1/4,0,1/2)
+r6 <- c(0,0,0,0,0,0,1)
+r7 <- c(0,1/8,1/8,1/8,1/8,1/4,1/4)
+R1 <- rbind(r1,r2,r3,r4,r5,r6,r7)
+```
+```{r}
+matrixpower(R1, 100)
+```
+
+
+#3.43
+
+We have a Markov chain with TPM
+
+$$
+ P = 
+\left[ \begin{array}{cccc}
+ 1/3 & 1/4  & 0 & 1/4 \\ 
+ p & 0  & 1-p & 0 \\
+ 0 & 1/4 & 1/2 & 1/4  \\
+ q & 0  & 1-q & 0 \\  
+\end{array}  \right]
+$$
+##(a) For what values of p and q is the chain ergodic?
+If $p, q \notin {0,1}$ it is ergodic since it is irreducible and aperiodic (due to vertex 1 that has a self loop).
+Otherwise we shall do case analysis (for more details refer to onenote document (or Appendix 2) that will be combined with this r markdown knitted, hopefully), but when 
+$(p, q) = (1,0)$ or $(p,q) = (0,1)$ the whole graph stay irreducible and aperiodic, thus it is ergodic.
+
+When $(p,q) = (0,0), (1,1)$ however, the chain do not stay irreducible (for case (0,0), vertex 1 becomes transient; for case (1,1), state 3 becomes transient).
+
+##(b) For what values of p and q is the chain reversible?
+
+Recall the detailed balance equations given a stationary distribution $\vec{\pi} = (\pi_1, ... ,\pi_n)$ and chain with n*n TPM P
+
+$$
+\forall i, j\  \ \pi_i P_{ij} = \pi_j P_{ji}
+$$
+We find the expression for both hand sides for all possible cases once we find the stationary distribution. 
+
+But first, let us find the stationary distribution. If you set $\pi_1 = 1$ (you will standardize it anyway)
+We have
+
+$$
+1 = 1/2 + p\pi_2 + q\pi_4 \implies \frac{1}{2} = p \pi_2 + q\pi_4
+$$
+$$
+\pi_2 = \pi_4 = \frac{1}{4} + \frac{1}{4}\pi_3
+$$
+$$
+\pi_3 = (1-p) \pi_2 + \frac{1}{2} \pi_3 + (1-q) \pi_4 \implies \frac{1}{2} \pi_3 = (2-(p+q)) \pi_2
+$$
+If we solve the equations we obtain 
+$$
+\pi = (\frac{p+q}{3}, \frac{1}{6}, \frac{2-p-q}{3}, \frac{1}{6})
+$$
+Now we dive into the detailed balance equations:
+
+$$
+\pi_1 P_{12} = \frac{p+q}{3} \frac{1}{4} = \frac{p+q}{12} =  \pi_2 P_{21} = \frac{p}{6}
+$$
+$$
+\pi_1 P_{13} = 0 = \pi_3 P_{31}
+$$
+$$
+\pi_1 P_{14} = \frac{p+q}{12} = \pi_4 P_{41} = \frac{q}{6}
+$$
+
+$$
+\pi_2 P_{23} = \frac{1-p}{6} = \pi_3 P_{32} = \frac{2-p-q}{12}
+$$
+$$
+\pi_2 P_{24} = 0 = \pi_4 P_{42}
+$$
+$$
+\pi_3 P_{34} = \frac{2-p-q}{12} = \pi_4 P_{43} = \frac{1-q}{6}
+$$
+All the equations hold once $p=q$. So the chain is reversible when p is equal to q.
+#3.56, 
+
+Let $X_n$ be the most recent subsequence of $HTTHH$.
+$$
+P = 
+\left[ \begin{array}{lc|cccccc}
+  & \emptyset  & H & HT & HTT & HTTH & HTTHH  \\
+ \emptyset  & 2/3 & 1/3 & 0 & 0 & 0 & 0  \\
+ H & 0 & 1/3 & 2/3 & 0 & 0 & 0  \\
+ HT & 0  & 1/3 & 0 & 2/3 & 0 & 0 & \\  
+HTT & 2/3 & 0 & 0 & 0 & 1/3 & 0  \\
+HTTH & 0 & 0 & 2/3 & 0 & 0 & 1/3  \\
+HTTHH & 0 & 0 & 0 & 0 & 0 & 1
+\end{array}  \right]
+$$
+In the beginning, we have 2/3 chance of having tails (so we have to start over) and 1/3 chance of having H.
+Once we have H, we have 2/3 chance of obtaining a T in the following flip and 1/3 chance of getting H (I am deliberately using the alphabet, instead of word to avoid the pun), continuing the sequence.
+Once we have HT, we have 1/3 chance of getting H (going back to the previous case) and 2/3 chance of getting T in the flip (continuing the sequence).
+Once we have HTT, we have 2/3 chance of getting T (and we need to start over) and 1/3 chance of getting H in the flip (continuing the sequence).
+Once we have HTTH (I started copy and pasting a while ago), we have 2/3 chance of getting T, heading to "HT" and 1/3 chance of getting H in the flip, continuing the sequence.
+And HTTHH is an absorbing state.
+
+
+Remark that on the fourth row (when we have the subsequence "HTTH"), if the next flip returns T, our most recent subsequence will just return to "HT"; we do not need to start from the beginning. Among classmates there was an argument on this. We will find the fundamental matrix and the expected number of flips through R commands
+```{r}
+q1 <- c(2/3,1/3,0,0,0)
+q2 <- c(0,1/3,2/3,0,0)
+q3 <- c(0,1/3,0,2/3,0)
+q4 <- c(2/3,0,0,0,1/3)
+q5 <- c(0,0,2/3,0,0)
+Q = rbind(q1,q2,q3,q4,q5)
+finv = diag(5)-Q
+f =  solve(finv)
+
+f  %*% c(1,1,1,1,1)
+
+```
+
+We should expect roughly 64 (63.75) flips till we see the given sequence. Most of the people said 72.75 after messing up the fourth row, since a "trustworthy source" said so!
+
+## The pages after this are appendices

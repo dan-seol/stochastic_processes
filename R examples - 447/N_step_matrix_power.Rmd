@@ -1,0 +1,130 @@
+---
+title: "Transition Matrices"
+output:
+  pdf_document: default
+  html_document: default
+header-includes: \usepackage{blkarray}
+---
+
+
+Transition matrix from one location for early summer subseason fire risk: 
+
+
+
+\begin{align}
+P = 
+\begin{blockarray}{cccccc}
+& \mbox{Nil} &  \mbox{Low} &\mbox{Moderate}  & \mbox{High} & \mbox{Extreme} \\ 
+\begin{block}{c(ccccc)}
+\mbox{Nil} & 0.575 & 0.118 & 0.172 & 0.109 & 0.026 \\
+\mbox{Low} & 0.453 & 0.243 & 0.148 & 0.123 & 0.033 \\
+\mbox{Moderate} & 0.104 & 0.343 & 0.367 & 0.167 & 0.019 \\
+\mbox{High} & 0.015 & 0.066 & 0.318 & 0.505 & 0.096 \\
+\mbox{Extreme} & 0.000 & 0.060 & 0.149 & 0.567 & 0.224 \\
+\end{block}
+\end{blockarray}
+\end{align}
+
+
+```{r}
+weather_P = matrix(c(0.575,0.118 , 0.172 , 0.109 , 0.026, 
+0.453 , 0.243 , 0.148 , 0.123 , 0.033, 
+0.104 , 0.343 , 0.367 , 0.167 , 0.019 ,
+0.015 , 0.066 , 0.318 , 0.505 , 0.096 , 
+0.000 , 0.060 , 0.149 , 0.567 , 0.224),ncol=5,nrow=5,byrow=T)
+```
+
+### Code for computing $P^n$ from textbook
+
+```{r}
+##### Matrix powers ###############################
+# matrixpower(mat,k) mat^k
+#
+matrixpower = function(X, n){
+  
+  if(dim(X)[1] != dim(X)[2]){
+     throw("Dimensions of the matrix do not match: ", dim(X))
+  }
+  if (n==0){return(diag(dim(X)[1]))}
+  else if(n >0) {return(X %*% matrixpower(X, (n-1)))}
+  else {return(matrixpower(solve(X), -n))}
+}
+```
+
+### For n = 3
+```{r}
+matrixpower(weather_P,3)
+```
+
+
+### For n = 10
+```{r}
+matrixpower(weather_P,10)
+```
+
+### Simulating from the chain (Code from textbook)
+
+```{r}
+###### Simulate discrete-time Markov chain ########################
+# Simulates n steps of a Markov chain 
+# markov(init,mat,n,states)
+# Generates X0, ..., Xn for a Markov chain with initiial
+#  distribution init and transition matrix mat
+# Labels can be a character vector of states; default is 1, .... k
+
+markov <- function(init,mat,n,labels) { 
+	if (missing(labels)) labels <- 1:length(init)
+simlist <- numeric(n+1)
+states <- 1:length(init)
+simlist[1] <- sample(states,1,prob=init)
+for (i in 2:(n+1)) 
+	{ simlist[i] <- sample(states,1,prob=mat[simlist[i-1],]) }
+labels[simlist]
+}
+####################################################
+```
+
+```{r}
+library(tidyverse)
+###@ Define initial distribution 
+
+init_prob = c(0.4,0.25,0.2,0.1) ## First four states
+init_prob = c(init_prob, 1 - sum(init_prob)) ## Forces sum to one
+
+iter=100
+simulated_states = markov(init_prob,weather_P,iter,
+                          labels=c("Nil","Low","Moderate","High","Extreme"))
+
+simulated_states  = ordered(simulated_states, 
+                            c("Nil","Low","Moderate","High","Extreme"))
+
+sim_df = data_frame(Iter=0:iter, States = simulated_states)
+ggplot(sim_df,aes(x=Iter,y=States,group=1)) + 
+  geom_point(aes(colour=States)) +geom_line(aes(colour=States))
+
+sim_df %>% group_by(States) %>% summarise(Counts=n())
+```
+
+### Larger number of iterations 
+
+```{r}
+init_prob = c(0.4,0.25,0.2,0.1) ## First four states
+init_prob = c(init_prob, 1 - sum(init_prob)) ## Forces sum to one
+
+iter=10000
+simulated_states = markov(init_prob,weather_P,iter,
+                          labels=c("Nil","Low","Moderate","High","Extreme"))
+
+sim_df = data_frame(Iter=0:iter, States = 
+                      ordered(simulated_states,
+                              c("Nil","Low","Moderate","High","Extreme")))
+
+ggplot(sim_df,aes(x=Iter,y=States,group=1)) + 
+  geom_point(aes(colour=States)) +geom_line(aes(colour=States))
+
+sim_df %>% group_by(States) %>% summarise(Counts=n()) %>% 
+    mutate(Proportion=Counts/sum(Counts))
+
+```
+
+
